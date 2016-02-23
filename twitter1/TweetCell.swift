@@ -29,7 +29,7 @@ class TweetCell: UITableViewCell {
     
     var tweet:Tweet?
     
-    
+    let tapProfileImage = UIGestureRecognizer()
     
    
     
@@ -38,9 +38,16 @@ class TweetCell: UITableViewCell {
         
         profileImage.layer.cornerRadius = 6.0
         profileImage.clipsToBounds = true
+        
+        tapProfileImage.addTarget(self, action: "toProfileViewSegue")
+        profileImage.addGestureRecognizer(tapProfileImage)
+        profileImage.userInteractionEnabled = true
+
        
     }
-    
+ 
+ 
+
     
     @IBAction func Fav(sender: AnyObject) {
         Favorite()

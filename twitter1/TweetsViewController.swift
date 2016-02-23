@@ -14,6 +14,8 @@ class TweetsViewController: UIViewController, UITableViewDataSource, UITableView
     
     @IBOutlet weak var headshot: UIImageView!
     @IBOutlet weak var tableView: UITableView!
+   let tapProfileImage = UITapGestureRecognizer()
+    
     
     override func viewDidLoad(){
         super.viewDidLoad()
@@ -21,8 +23,7 @@ class TweetsViewController: UIViewController, UITableViewDataSource, UITableView
         tableView.dataSource = self
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.estimatedRowHeight = 150
-       // tableView.estimatedRowHeight = 130
-        
+      
         let refreshControl = UIRefreshControl()
         refreshControl.addTarget(self, action: "refreshControlAction:", forControlEvents: UIControlEvents.ValueChanged)
         tableView.insertSubview(refreshControl, atIndex: 0)
@@ -34,7 +35,14 @@ class TweetsViewController: UIViewController, UITableViewDataSource, UITableView
         let imageURL = NSURL(string: User.currentUser!.profileImageUrl!)
         
         headshot.setImageWithURL(imageURL!)
-    }
+        
+        //segue to profile detail view
+        
+        tapProfileImage.addTarget(self, action: "toProfileViewSegue")
+        headshot.addGestureRecognizer(tapProfileImage)
+        headshot.userInteractionEnabled = true
+
+        }
   
     @IBAction func logout(sender: AnyObject) {
         User.currentUser?.logout()
@@ -47,6 +55,11 @@ class TweetsViewController: UIViewController, UITableViewDataSource, UITableView
             return 0
         }
     }
+    
+    func toProfileViewSegue(){
+        performSegueWithIdentifier("toProfileView", sender: User.currentUser)
+    }
+    
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("TweetCell", forIndexPath: indexPath) as! TweetCell
@@ -63,8 +76,12 @@ class TweetsViewController: UIViewController, UITableViewDataSource, UITableView
         cell.timestamp.text = "\(timestamp.month)/\(timestamp.day)/\(timestamp.year) "
         let imageUrl = NSURL(string:(tweet.user!.profileImageUrl)!)
         cell.profileImage.setImageWithURL(imageUrl!)
-       
-        print ("\(indexPath.row): \(tweet.id)")
+      
+        
+//        //add tap gesture to profile image
+//        cell.profileImage.addGestureRecognizer(tapProfileImage)
+//        cell.profileImage.userInteractionEnabled = true
+    
         if (tweet.favorites > 0){
             cell.favorite.text = String(tweet.favorites!)
         }else{
@@ -79,6 +96,7 @@ class TweetsViewController: UIViewController, UITableViewDataSource, UITableView
         return cell
     }
     
+    
    
 
     func refreshControlAction(refreshControl: UIRefreshControl) {
@@ -89,5 +107,20 @@ class TweetsViewController: UIViewController, UITableViewDataSource, UITableView
         })
         refreshControl.endRefreshing()
     }
+    
 
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?){
+        if segue.identifier == "toDetailView"{
+            let indexPath = tableView.indexPathForSelectedRow
+            let tweet = tweets![indexPath!.row]
+            print(tweet.createdAtString)
+            let DestVC: DetailViewController = segue.destinationViewController as! DetailViewController
+            DestVC.tweet = tweet
+        }  else if segue.identifier == "toProfileView" {
+            let user = sender as! User
+            let profileDetailViewController = segue.destinationViewController as! ProfileViewController
+            profileDetailViewController.user = user
+        }
+    }
+   
 }

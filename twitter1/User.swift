@@ -19,12 +19,24 @@ class User: NSObject {
     var tagline:String?
     var dictionary: NSDictionary
     
+    var follower: Int?
+    var tweetsNum:Int?
+    var following:Int?
+    var profileHeaderUrl: String?
+    
     init(dictionary:NSDictionary){
         self.dictionary = dictionary
         name = dictionary["name"] as? String
         screenname = dictionary["screen_name"] as? String
         profileImageUrl = dictionary["profile_image_url"] as? String
         tagline = dictionary["description"] as? String
+        
+        follower = dictionary["followers_count"] as? Int
+        tweetsNum = dictionary["statuses_count"] as? Int
+        following = dictionary["friends_count"] as? Int
+        profileHeaderUrl = dictionary["profile_banner_url"] as? String
+       // profileBackgroundColor = dictionary["profile_background_color"] as? String
+       
     }
     
     
